@@ -132,7 +132,8 @@ def process_log_data(spark, input_data, output_data, mode):
     time_table.write.mode("overwrite").partitionBy(
                                         "year",
                                         "month").parquet(output_data+"time")
-
+    # read parquets files already processed. This will allow us to use
+    # a higher quality version of the original data
     song_table_read    = spark.read.parquet(
                             output_data+"songs")["song_id",
                                                 "title",
@@ -141,10 +142,11 @@ def process_log_data(spark, input_data, output_data, mode):
     artists_table_read = spark.read.parquet(
                             output_data+"artists")["artist_id",
                                                 "name"]
+    # join the two dataframe in preparation for songplays table.
     df_song_comp = song_table_read.join(artists_table_read, 
                                         on=['artist_id'],
                                         how='left')
-    # extract columns from joined song and log datasets to create songplays table 
+    # select relevant fields from the logs.
     songplays_aux_table = df.selectExpr(
             "song as title",
             "artist as name",
@@ -156,13 +158,16 @@ def process_log_data(spark, input_data, output_data, mode):
             "location",
             "userAgent as user_agent").drop_duplicates(subset=['start_time'])
 
+    # create an auto increment value for the field songplay_id
+    # using monotonically_increasing_id
     songplays_aux_table = songplays_aux_table.withColumn("songplay_id", 
                                                 monotonically_increasing_id())
 
+    # join the relevant dataframes for songplays
     songplays_table = songplays_aux_table.join(df_song_comp, 
                                             on=['title','name','duration'],
                                             how='left')
-
+    # select only the reuired fields for songplays
     songplays_table = songplays_table.selectExpr('songplay_id',
                                                 'start_time',
                                                 'user_id',
@@ -192,7 +197,6 @@ def main(mode):
     
     process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data, mode)
-    spark.stop()
 
 
 if __name__ == "__main__":
