@@ -13,6 +13,7 @@ Please read read the following repositories to get context:
 + [cassandra query optimized.](http://garisplace.com/udacity/cassandra_project.html)
 + [Redshift Data warehouse.](https://github.com/gariciodaro/redshift-Sparkify-data-warehouse)
 
+## ELT
 <div>
 <img src="./workflow.svg">
 </div>
