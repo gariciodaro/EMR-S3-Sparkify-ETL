@@ -14,7 +14,7 @@ Please read read the following repositories to get context:
 + [Redshift Data warehouse.](https://github.com/gariciodaro/redshift-Sparkify-data-warehouse)
 
 <div>
-<img src="./work_slow.svg">
+<img src="./workflow.svg">
 </div>
 
 
